@@ -4,6 +4,7 @@
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
+   
     "start": "react-native start",
     "ios": "react-native run-ios",
     "android": "react-native run-android --active-arch-only",
@@ -30,7 +31,8 @@
     "expo:ios": "expo start --ios",
     "expo:web": "expo start --web",
     "expo:build:detox": "detox build -c ios.sim.expo",
-    "expo:test:detox": "./bin/downloadExpoApp.sh && detox test --configuration ios.sim.expo"
+    "expo:test:detox": "./bin/downloadExpoApp.sh && detox test --configuration ios.sim.expo",
+    "prepare": "husky install"
   },
   "overrides": {
     "react-error-overlay": "6.0.9"
@@ -77,6 +79,8 @@
     "@babel/plugin-proposal-optional-catch-binding": "7.16.7",
     "@babel/preset-env": "^7.16.11",
     "@babel/runtime": "^7.18.3",
+    "@commitlint/cli": "^17.4.2",
+    "@commitlint/config-conventional": "^17.4.2",
     "@react-native-community/cli-platform-ios": "^8.0.2",
     "@rnx-kit/metro-config": "^1.2.32",
     "@rnx-kit/metro-resolver-symlinks": "0.1.21",
@@ -131,18 +135,17 @@
     "@types/react-dom": "^18",
     "@expo/dev-server": "0.1.120"
   },
-  "prettier": {   
+  "prettier": {
     "singleQuote": true,
     "trailingComma": "all",
     "arrowParens": "always",
-    "printWidth": 120,    
+    "printWidth": 120,
     "bracketSpacing": true,
     "jsxSingleQuote": false,
     "quoteProps": "as-needed",
     "semi": true,
     "tabWidth": 2,
     "useTabs": true
-    
   },
   "detox": {
     "test-runner": "jest",
@@ -246,9 +249,9 @@
       "space-before-function-paren": 0
     },
     "lint-staged": {
-      "src/**/*.{js,jsx,ts,tsx,json}": [
-        "prettier src --write",
-        "eslint src --fix",
+      "*.{js,jsx,ts,tsx,css}": [
+        "yarn prettier app --write",
+        "yarn eslint app --fix",
         "git add"
       ]
     }
