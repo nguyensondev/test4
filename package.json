@@ -4,7 +4,7 @@
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-   
+    "lint-staged": "lint-staged",
     "start": "react-native start",
     "ios": "react-native run-ios",
     "android": "react-native run-android --active-arch-only",
@@ -13,7 +13,7 @@
     "ci:test:detox": "detox test -c ios.sim.release -l verbose --cleanup",
     "ci:build:detox": "detox build -c ios.sim.release",
     "compile": "tsc --noEmit -p . --pretty",
-    "format": "prettier --write \"app/**/*.{js,jsx,json,md,ts,tsx}\"",
+    "format": "prettier --write \"app/**/*.{js,jsx,json,md,ts,tsx}\" && git add .",
     "lint": "eslint index.js App.js app test --fix --ext .js,.ts,.tsx && npm run format",
     "patch": "patch-package",
     "test": "jest",
@@ -97,6 +97,7 @@
     "eslint": "8.17.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-config-standard": "17.0.0",
+    "eslint-plugin-autofix": "^1.1.0",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-n": "^15.0.0",
     "eslint-plugin-node": "11.1.0",
