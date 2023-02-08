@@ -49,7 +49,7 @@ const WebListItem: FC<DemoListItem> = ({ item, sectionIndex }) => {
   return (
     <View>
       <Link to={`/showroom/${sectionSlug}`} style={$menuContainer}>
-        <Text preset="bold">{item.name}</Text>
+        <Text preset="bold">{"item.name"}</Text>
       </Link>
       {item.useCases.map((u) => {
         const itemSlug = slugify(u)
