@@ -49,7 +49,7 @@ export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function Dem
         <ListItem
           LeftComponent={
             <View style={$item}>
-              <Text preset="bold">App Id</Text>
+              <Text preset="bold">Appsdasd Id</Text>
               <Text>{Application.applicationId}</Text>
             </View>
           }
