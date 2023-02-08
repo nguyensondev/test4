@@ -86,7 +86,7 @@ const $container: ViewStyle = {
 	alignItems: 'center',
 	height: 56,
 	justifyContent: 'center',
-	width: 56,
+	width: 58,
 };
 
 const $topBar: ViewStyle = {
