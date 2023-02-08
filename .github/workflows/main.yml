@@ -36,3 +36,8 @@ jobs:
         with:
           coverage-file: ./jest-report.json
           base-coverage-file: ./jest-report.json
+
+ build-ios:
+    needs: install-and-test
+    uses: ./.github/workflows/build-ios.yml
+    secrets: inherit
