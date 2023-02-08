@@ -49,17 +49,17 @@ jobs:
       - name: Build iOS (Release)
         uses: yukiarrr/ios-build-action@v1.5.0
         with:
-          project-path: ios/Timely.xcodeproj
+          project-path: ios/Charmsta.xcodeproj
           p12-base64: ${{ secrets.IOS_P12_BASE64 }}
           mobileprovision-base64: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
           code-signing-identity: "Apple Distribution"
           certificate-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
           team-id: ${{ secrets.IOS_TEAM_ID }}
-          workspace-path: ios/Timely.xcworkspace
-          output-path: "Timely.ipa"
+          workspace-path: ios/Charmsta.xcworkspace
+          output-path: "Charmsta.ipa"
 
       - name: Upload build
         uses: actions/upload-artifact@v3
         with:
-          name: "Timely.ipa"
-          path: "Timely.ipa"
+          name: "Charmsta.ipa"
+          path: "Charmsta.ipa"
