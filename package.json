@@ -13,7 +13,7 @@
     "ci:test:detox": "detox test -c ios.sim.release -l verbose --cleanup",
     "ci:build:detox": "detox build -c ios.sim.release",
     "compile": "tsc --noEmit -p . --pretty",
-    "format": "prettier --write \"app/**/*.{js,jsx,json,md,ts,tsx}\" && git add .",
+    "format": "prettier --write \"app/**/*.{js,jsx,json,md,ts,tsx}\"",
     "lint": "eslint index.js App.js app test --fix --ext .js,.ts,.tsx && npm run format",
     "patch": "patch-package",
     "test": "jest",
