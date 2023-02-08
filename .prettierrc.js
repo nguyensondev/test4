@@ -8,6 +8,6 @@ module.exports = {
     jsxSingleQuote: false,
     quoteProps: 'as-needed',
     semi: true,
-    tabWidth: 2,
+    tabWidth: 4,
     useTabs: true,
   };
