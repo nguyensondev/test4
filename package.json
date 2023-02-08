@@ -32,7 +32,8 @@
     "expo:web": "expo start --web",
     "expo:build:detox": "detox build -c ios.sim.expo",
     "expo:test:detox": "./bin/downloadExpoApp.sh && detox test --configuration ios.sim.expo",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "ci": "yarn install --frozen-lockfile"
   },
   "overrides": {
     "react-error-overlay": "6.0.9"
