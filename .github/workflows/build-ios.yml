@@ -47,23 +47,18 @@ jobs:
         run: cd ios && pod install && cd ..
 
       - name: Build iOS (Release)
-        uses: sparkfabrik/ios-build-action@v2.1.0
+        uses: yukiarrr/ios-build-action@v1.5.0
         with:
-          # configuration: Release
-          # scheme: MyScheme
-          increment-build-number: true
           project-path: ios/Charmsta.xcodeproj
-          # p12-base64: ${{ secrets.IOS_P12_BASE64 }}
-          # mobileprovision-base64: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
-          # code-signing-identity: "Apple Distribution"
-          # certificate-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          p12-base64: ${{ secrets.IOS_P12_BASE64 }}
+          mobileprovision-base64: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
+          code-signing-identity: "iPhone Distribution"
+          certificate-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
           team-id: ${{ secrets.IOS_TEAM_ID }}
           workspace-path: ios/Charmsta.xcworkspace
           output-path: "Charmsta.ipa"
-          ios-app-id: "com.softyn.charmsta"
-          team-name: ${{ secrets.IOS_TEAM_NAME }}
-          fastlane-env: stage
-          apple-key-id: ${{ secrets.APPLE_KEY_ID }}
+          scheme: MyApp
+
       - name: Upload build
         uses: actions/upload-artifact@v3
         with:
