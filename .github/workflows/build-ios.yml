@@ -62,7 +62,7 @@ jobs:
           output-path: "Charmsta.ipa"
           ios-app-id: "com.softyn.charmsta"
           team-name: ${{ secrets.IOS_TEAM_NAME }}
-
+          fastlane-env: stage
       - name: Upload build
         uses: actions/upload-artifact@v3
         with:
