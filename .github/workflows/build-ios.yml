@@ -57,7 +57,7 @@ jobs:
           team-id: ${{ secrets.IOS_TEAM_ID }}
           workspace-path: ios/Charmsta.xcworkspace
           output-path: "Charmsta.ipa"
-          scheme: MyApp
+          scheme: Charmsta
 
       - name: Upload build
         uses: actions/upload-artifact@v3
