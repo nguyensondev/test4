@@ -19,6 +19,17 @@ on:
       # APPCENTER_TOKEN_IOS:
       #   required: true
 
+env:
+  WORKSPACE: ${{ 'ios/Charmsta.xcworkspace' }}
+  SCHEME: ${{ 'Charmsta' }}
+  CONFIGURATION: ${{ 'Release' }}
+  ARCHIVE_PATH: ${{ 'build/Charmsta.xcarchive' }}
+  DISTRIBUTION_PROFILE_STAGING: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
+  DISTRIBUTION_CERTIFICATE: ${{ secrets.IOS_P12_BASE64 }}
+  EXPORT_PATH: ${{ 'staging/' }} 
+  PLIST_PATH: ${{'ios/Charmsta/Export.plist' }}
+
+
 jobs:
   build-ios:
     runs-on: macos-latest
@@ -37,7 +48,7 @@ jobs:
       - name: Restore buildcache
         uses: mikehardy/buildcache-action@v1
         continue-on-error: true
-        
+
       - name: Restore Pods cache
         uses: actions/cache@v3
         with:
@@ -51,21 +62,51 @@ jobs:
       - name: Install pod dependencies
         run: cd ios && pod install && cd ..
 
-      - name: Build iOS (Release)
-        uses: yukiarrr/ios-build-action@v1.5.0
-        with:
-          project-path: ios/Charmsta.xcodeproj
-          p12-base64: ${{ secrets.IOS_P12_BASE64 }}
-          mobileprovision-base64: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
-          code-signing-identity: "iPhone Distribution"
-          certificate-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
-          team-id: ${{ secrets.IOS_TEAM_ID }}
-          workspace-path: ios/Charmsta.xcworkspace
-          output-path: "Charmsta.ipa"
-          scheme: Charmsta
+      - name: Select Xcode
+        run: sudo xcode-select -switch /Applications/Xcode.app
+
+      - name: Xcode Version
+        run: /usr/bin/xcodebuild -version
+
+      - name: Create build folder
+        run: |
+        mkdir -p build && mkdir -p staging && mkdir -p prod
+
+      - name: Build Archive
+        run: |
+          xcodebuild -workspace $WORKPLACE -scheme $SCHEME -configuration $CONFIGURATION \
+          archive -archivePath $ARCHIVE_PATH -allowProvisioningUpdates
+          PROVISIONING_STYLE="Manual" \
+          PROVISIONING_PROFILE={$DISTRIBUTION_PROFILE_STAGING} \
+          CODE_SIGN_STYLE="Manual" \
+          CODE_SIGN_IDENTITY={$DISTRIBUTION_CERTIFICATE} \
+
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive -archivePath $ARCHIVE_PATH -exportPath $EXPORT_PATH . -exportOptionsPlist $PLIST_PATH \
+      # - name: Build iOS (Release)
+      #   uses: yukiarrr/ios-build-action@v1.5.0
+      #   with:
+      #     project-path: ios/Charmsta.xcodeproj
+      #     p12-base64: ${{ secrets.IOS_P12_BASE64 }}
+      #     mobileprovision-base64: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
+      #     code-signing-identity: "iPhone Distribution"
+      #     certificate-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+      #     team-id: ${{ secrets.IOS_TEAM_ID }}
+      #     workspace-path: ios/Charmsta.xcworkspace
+      #     output-path: "Charmsta.ipa"
+      #     scheme: Charmsta
 
       - name: Upload build
         uses: actions/upload-artifact@v3
         with:
           name: "Charmsta.ipa"
-          path: "Charmsta.ipa"
+          path: |
+            ${{ env.ARTIFACT_PATH }}
+
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() }}
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/dist_pp.mobileprovision
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/dist_pp_adc.mobileprovision
