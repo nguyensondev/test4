@@ -23,7 +23,7 @@ env:
   WORKSPACE: ${{ 'ios/Charmsta.xcworkspace' }}
   SCHEME: ${{ 'Charmsta' }}
   CONFIGURATION: ${{ 'Release' }}
-  ARCHIVE_PATH: ${{ 'build/Charmsta.xcarchive' }}
+  ARCHIVE_PATH: ${{ 'build_ipa/Charmsta.xcarchive' }}
   DISTRIBUTION_PROFILE_STAGING: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
   DISTRIBUTION_CERTIFICATE: ${{ secrets.IOS_P12_BASE64 }}
   EXPORT_PATH: ${{ 'staging/' }} 
