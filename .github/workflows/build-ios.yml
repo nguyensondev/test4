@@ -23,7 +23,7 @@ env:
   WORKSPACE: ${{ 'ios/Charmsta.xcworkspace' }}
   SCHEME: ${{ 'Charmsta' }}
   CONFIGURATION: ${{ 'Release' }}
-  ARCHIVE_PATH: ${{ 'build_ipa/Charmsta.xcarchive' }}
+  ARCHIVE_PATH: ${{ 'build/Charmsta.xcarchive' }}
   DISTRIBUTION_PROFILE_STAGING: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
   DISTRIBUTION_CERTIFICATE: ${{ secrets.IOS_P12_BASE64 }}
   EXPORT_PATH: ${{ 'staging/' }} 
@@ -74,9 +74,10 @@ jobs:
 
       - name: Build Archive
         run: |
-          xcodebuild -workspace $WORKPLACE -scheme $SCHEME -configuration Release \          
+          xcodebuild -workspace $WORKPLACE -scheme $SCHEME -configuration Release \   
+          archive -sdk iphoneos -allowProvisioningUpdates -archivePath $ARCHIVE_PATH \       
           PROVISIONING_STYLE="Manual" \
-          PROVISIONING_PROFILE={$DISTRIBUTION_PROFILE_STAGING} \
+          PROVISIONING_PROFILE_SPECIFIER={$DISTRIBUTION_PROFILE_STAGING} \
           CODE_SIGN_STYLE="Manual" \
           CODE_SIGN_IDENTITY={$DISTRIBUTION_CERTIFICATE} \
 
