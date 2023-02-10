@@ -74,7 +74,7 @@ jobs:
 
       - name: Build Archive
         run: |
-          xcodebuild -workspace $WORKPLACE -scheme $SCHEME -configuration Release \   
+          xcodebuild -list -workspace $WORKPLACE -scheme $SCHEME -configuration Release \   
           archive -sdk iphoneos -allowProvisioningUpdates -archivePath $ARCHIVE_PATH \       
           PROVISIONING_STYLE="Manual" \
           PROVISIONING_PROFILE_SPECIFIER={$DISTRIBUTION_PROFILE_STAGING} \
