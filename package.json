@@ -6,7 +6,7 @@
   "scripts": {
     "lint-staged": "lint-staged",
     "start": "react-native start",
-    "ios": "react-native run-ios",
+    "ios": "react-native run-ios --configuration Release",
     "android": "react-native run-android --active-arch-only",
     "test:detox": "detox test -c ios.sim.debug",
     "build:detox": "detox build -c ios.sim.debug",

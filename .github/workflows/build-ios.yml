@@ -74,8 +74,7 @@ jobs:
 
       - name: Build Archive
         run: |
-          xcodebuild -list -workspace $WORKPLACE -scheme $SCHEME -configuration Release \   
-          archive -sdk iphoneos -allowProvisioningUpdates -archivePath $ARCHIVE_PATH \       
+          xcodebuild -workspace $WORKPLACE -scheme Charmsta -configuration Release \             
           PROVISIONING_STYLE="Manual" \
           PROVISIONING_PROFILE_SPECIFIER={$DISTRIBUTION_PROFILE_STAGING} \
           CODE_SIGN_STYLE="Manual" \
