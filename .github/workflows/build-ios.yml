@@ -90,7 +90,7 @@ jobs:
 
       - name: Build Archive
         run: |
-          xcodebuild archive -workspace ios/Charmsta.xcworkspace -scheme Charmsta -configuration Release  -archivePath build/Charmsta.xcarchive -allowProvisioningUpdates PROVISIONING_STYLE="Manual" PROVISIONING_PROFILE={$BUILD_PROVISION_PROFILE_BASE64} CODE_SIGN_STYLE="Manual" CODE_SIGN_IDENTITY={$BUILD_CERTIFICATE_BASE64} \          
+          xcodebuild archive -workspace ios/Charmsta.xcworkspace -scheme Charmsta -configuration Release  -archivePath build/Charmsta.xcarchive -allowProvisioningUpdates PROVISIONING_STYLE="Manual" PROVISIONING_PROFILE={$secrets.IOS_MOBILEPROVISION_BASE64} CODE_SIGN_STYLE="Manual" CODE_SIGN_IDENTITY={$secrets.IOS_P12_BASE64 } \          
           
       - name: Export IPA
         run: |
