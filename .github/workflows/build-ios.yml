@@ -19,16 +19,6 @@ on:
       # APPCENTER_TOKEN_IOS:
       #   required: true
 
-env:
-  WORKSPACE: ${{ 'ios/Charmsta.xcworkspace' }}
-  SCHEME: ${{ 'Charmsta' }}
-  CONFIGURATION: ${{ 'Release' }}
-  ARCHIVE_PATH: ${{ 'build/Charmsta.xcarchive' }}
-  DISTRIBUTION_PROFILE_STAGING: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
-  DISTRIBUTION_CERTIFICATE: ${{ secrets.IOS_P12_BASE64 }}
-  EXPORT_PATH: ${{ 'staging/' }} 
-  PLIST_PATH: ${{'ios/Charmsta/Export.plist' }}
-
 
 jobs:
   build-ios:
@@ -68,17 +58,44 @@ jobs:
       - name: Xcode Version
         run: /usr/bin/xcodebuild -version
 
-      # - name: Create build folder
-      #   run: |
-      #   mkdir -p build && mkdir -p staging && mkdir -p prod
+      - name: Install the Apple certificate and provisioning profile
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.IOS_P12_BASE64 }}
+          P12_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+
+        run: |
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # import certificate and provisioning profile from secrets
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          # apply provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
       - name: Build Archive
         run: |
-          xcodebuild -workspace $WORKPLACE -scheme Charmsta -configuration Release \             
+          xcodebuild -workspace ios/Charmsta.xcworkspace -scheme Charmsta -configuration Release \
+          archive -archivePath build/Charmsta.xcarchive -allowProvisioningUpdates
           PROVISIONING_STYLE="Manual" \
-          PROVISIONING_PROFILE_SPECIFIER={$DISTRIBUTION_PROFILE_STAGING} \
+          PROVISIONING_PROFILE={$BUILD_PROVISION_PROFILE_BASE64} \
           CODE_SIGN_STYLE="Manual" \
-          CODE_SIGN_IDENTITY={$DISTRIBUTION_CERTIFICATE} \
+          CODE_SIGN_IDENTITY={$BUILD_CERTIFICATE_BASE64} \
 
       - name: Export IPA
         run: |
