@@ -90,8 +90,7 @@ jobs:
 
       - name: Build Archive
         run: |
-          xcodebuild -workspace ios/Charmsta.xcworkspace -scheme Charmsta -configuration Release \
-          archive -archivePath build/Charmsta.xcarchive -allowProvisioningUpdates
+          xcodebuild archive -workspace ios/Charmsta.xcworkspace -scheme Charmsta -configuration Release  -archivePath build/Charmsta.xcarchive -allowProvisioningUpdates \          
           PROVISIONING_STYLE="Manual" \
           PROVISIONING_PROFILE={$BUILD_PROVISION_PROFILE_BASE64} \
           CODE_SIGN_STYLE="Manual" \
