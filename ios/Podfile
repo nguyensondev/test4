@@ -54,5 +54,18 @@ target 'Charmsta' do
     )
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
     File.delete("./.xcode.env.local") if File.exist?("./.xcode.env.local")
+
+    targetsToFix = ["EXConstants-EXConstants", "EXUpdates-EXUpdates", "React-Core-AccessibilityResources", "expo-dev-launcher-EXDevLauncher", "expo-dev-menu-EXDevMenu"];
+    installer.generated_projects.each do |project|
+      project.targets.each do |target|
+        if targetsToFix.include? target.name
+          puts "Set development team for target #{target.name}"
+          target.build_configurations.each do |config|
+            config.build_settings["DEVELOPMENT_TEAM"] = "MYTEAMID"
+            config.build_settings["CODE_SIGN_IDENTITY"] = "Apple Distribution";
+            config.build_settings["CODE_SIGN_STYLE"] = "Manual";
+          end
+        end
+      end
   end
 end
