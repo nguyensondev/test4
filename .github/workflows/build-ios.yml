@@ -1,4 +1,4 @@
-name: Build and Archive iOS App
+name: iOS Build
 on:
   push:
     branches:
