@@ -61,8 +61,8 @@ target 'Charmsta' do
         if targetsToFix.include? target.name
           puts "Set development team for target #{target.name}"
           target.build_configurations.each do |config|
-            config.build_settings["DEVELOPMENT_TEAM"] = "MYTEAMID"
-            config.build_settings["CODE_SIGN_IDENTITY"] = "Apple Distribution";
+            config.build_settings["DEVELOPMENT_TEAM"] = "XTN222Y95W"
+            config.build_settings["CODE_SIGN_IDENTITY"] = "iPhone Distribution";
             config.build_settings["CODE_SIGN_STYLE"] = "Manual";
           end
         end
