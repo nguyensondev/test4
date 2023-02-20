@@ -1,0 +1,128 @@
+name: "iOS Build"
+
+on:
+  workflow_call:
+    inputs:
+      publish:
+        required: false
+        type: boolean
+        description: Publish to Appcenter
+    secrets:
+      IOS_P12_BASE64:
+        required: true
+      IOS_MOBILEPROVISION_BASE64:
+        required: true
+      IOS_TEAM_ID:
+        required: true
+      IOS_CERTIFICATE_PASSWORD:
+        required: true
+      # APPCENTER_TOKEN_IOS:
+      #   required: true
+env:
+  BUILD_CERTIFICATE_BASE64: ${{ secrets.IOS_P12_BASE64 }}
+  P12_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+  BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
+  KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 14
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "yarn"
+
+      - name: Install Node modules
+        run: yarn ci
+
+      - name: Restore buildcache
+        uses: mikehardy/buildcache-action@v1
+        continue-on-error: true
+
+      - name: Restore Pods cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ios/Pods
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods
+          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+      - name: Install pod dependencies
+        run: cd ios && pod install && cd ..
+
+      - name: Select Xcode
+        run: sudo xcode-select -switch /Applications/Xcode.app
+
+      - name: Xcode Version
+        run: /usr/bin/xcodebuild -version
+
+      - name: Install the Apple certificate and provisioning profile
+        
+
+        run: |
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # import certificate and provisioning profile from secrets
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          # apply provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+      - name: Build Archive
+        run: |
+          xcodebuild archive -workspace ios/Charmsta.xcworkspace -scheme Charmsta -configuration Release \
+           -archivePath build/Charmsta.xcarchive -allowProvisioningUpdates \
+          PROVISIONING_STYLE="Manual" \
+          PROVISIONING_PROFILE={$BUILD_PROVISION_PROFILE_BASE64} \
+          CODE_SIGN_STYLE="Manual" \
+          CODE_SIGN_IDENTITY={$BUILD_CERTIFICATE_BASE64} \
+
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive -archivePath $ARCHIVE_PATH -exportPath $EXPORT_PATH . -exportOptionsPlist $PLIST_PATH \
+      # - name: Build iOS (Release)
+      #   uses: yukiarrr/ios-build-action@v1.5.0
+      #   with:
+      #     project-path: ios/Charmsta.xcodeproj
+      #     p12-base64: ${{ secrets.IOS_P12_BASE64 }}
+      #     mobileprovision-base64: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
+      #     code-signing-identity: "iPhone Distribution"
+      #     certificate-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+      #     team-id: ${{ secrets.IOS_TEAM_ID }}
+      #     workspace-path: ios/Charmsta.xcworkspace
+      #     output-path: "Charmsta.ipa"
+      #     scheme: Charmsta
+
+      - name: Upload build
+        uses: actions/upload-artifact@v3
+        with:
+          name: "Charmsta.ipa"
+          path: |
+            ${{ env.ARTIFACT_PATH }}
+
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() }}
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/dist_pp.mobileprovision
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/dist_pp_adc.mobileprovision

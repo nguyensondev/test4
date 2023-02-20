@@ -2,7 +2,7 @@ name: Build and Archive iOS App
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   build:
     runs-on: macos-latest
@@ -24,9 +24,9 @@ jobs:
       - name: Install CocoaPods
         run: cd ios && pod install
       - name: Decode provisioning profile
-        run: echo "${{ secrets.IOS_MOBILEPROVISION_BASE64 }}" | base64 --decode > ios/Charmsta.mobileprovision
+        run: echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > ios/MyApp.mobileprovision
       - name: Decode certificate
-        run: echo "${{ secrets.IOS_P12_BASE64 }}" | base64 --decode > ios/cert.p12
+        run: echo "${{ secrets.CODE_SIGNING_CERTIFICATE }}" | base64 --decode > ios/cert.p12
       - name: Install certificate
         run: |
           security create-keychain -p mysecretpassword build.keychain
@@ -34,10 +34,10 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple: -s -k mysecretpassword build.keychain
       - name: Build and archive app
         run: |
-          xcodebuild -workspace ios/Charmsta.xcworkspace -scheme Charmsta -configuration Release archive -archivePath $PWD/build/Charmsta.xcarchive CODE_SIGN_IDENTITY="iPhone Distribution" PROVISIONING_PROFILE_SPECIFIER="Charmsta.mobileprovision"
-          xcodebuild -exportArchive -archivePath $PWD/build/Charmsta.xcarchive -exportPath $PWD/build -exportOptionsPlist exportOptions.plist
+          xcodebuild -workspace ios/MyApp.xcworkspace -scheme MyApp -configuration Release archive -archivePath $PWD/build/MyApp.xcarchive CODE_SIGN_IDENTITY="iPhone Distribution" PROVISIONING_PROFILE_SPECIFIER="MyApp.mobileprovision"
+          xcodebuild -exportArchive -archivePath $PWD/build/MyApp.xcarchive -exportPath $PWD/build -exportOptionsPlist exportOptions.plist
       - name: Archive artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: Charmsta
-          path: ios/build/Charmsta.ipa
+          name: MyApp
+          path: ios/build/MyApp.ipa
