@@ -1,8 +1,5 @@
 name: iOS Build
-on:
-  push:
-    branches:
-      - master
+
 jobs:
   build:
     runs-on: macos-latest
