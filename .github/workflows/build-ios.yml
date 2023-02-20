@@ -24,21 +24,46 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Install Node.js and NPM
-        uses: actions/setup-node@v2.5.1
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 14
+        uses: actions/setup-node@v3
         with:
-          node-version: '14.x'
-      - name: Install dependencies
-        run: npm install
+          node-version: 16
+          cache: "yarn"
+
+      - name: Install Node.js and NPM
+        run: yarn ci
+
+      - name: Restore buildcache
+        uses: mikehardy/buildcache-action@v1
+        continue-on-error: true
+
+      # - name: Restore Pods cache
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: |
+      #       ios/Pods
+      #       ~/Library/Caches/CocoaPods
+      #       ~/.cocoapods
+      #     key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pods-
+
+      # - name: Install pod dependencies
+      #   run: cd ios && pod install && cd ..
+
       - name: Cache CocoaPods
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cocoapods
           key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
           restore-keys: ${{ runner.os }}-pods
+
+
       - name: Install CocoaPods
-        run: cd ios && pod install
+        run: cd ios && pod install && cd ..
+
       - name: Decode provisioning profile
         run: echo "${{ secrets.IOS_MOBILEPROVISION_BASE64 }}" | base64 --decode > ios/Charmsta.mobileprovision
       - name: Decode certificate
