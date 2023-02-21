@@ -99,7 +99,7 @@ jobs:
 
       - name: Export IPA
         run: |
-          xcodebuild -exportArchive -archivePath $ARCHIVE_PATH -exportPath $EXPORT_PATH . -exportOptionsPlist $PLIST_PATH \
+          xcodebuild -exportArchive -archivePath build/Charmsta.xcarchive -exportPath build-output/ios -exportOptionsPlist  -exportOptionsPlist ios/ExportOptions.plist \
       # - name: Build iOS (Release)
       #   uses: yukiarrr/ios-build-action@v1.5.0
       #   with:
