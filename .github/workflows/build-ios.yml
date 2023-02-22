@@ -88,6 +88,15 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
+
+      - name: Restore build archive cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/Library/Caches/org.carthage.CarthageKit/
+          key: ${{ runner.os }}-Carthage-${{ hashFiles('**/Cartfile.resolved') }}
+        id: restore-cache
+
       - name: Build Archive
         run: |
           xcodebuild archive -workspace ios/Charmsta.xcworkspace -scheme Charmsta -configuration Release \
@@ -96,6 +105,15 @@ jobs:
           PROVISIONING_PROFILE={$BUILD_PROVISION_PROFILE_BASE64} \
           CODE_SIGN_STYLE="Manual" \
           CODE_SIGN_IDENTITY="iPhone Distribution" \
+
+          
+      - name: Save build archive cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/Library/Caches/org.carthage.CarthageKit/
+          key: ${{ runner.os }}-Carthage-${{ hashFiles('**/Cartfile.resolved') }}
+          restore-keys: ${{ runner.os }}-Carthage-
 
       - name: Export IPA
         run: |
