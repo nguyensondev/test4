@@ -92,10 +92,8 @@ jobs:
       - name: Restore build archive cache
         uses: actions/cache@v2
         with:
-          path: |
-            ~/Library/Caches/org.carthage.CarthageKit/
-          key: ${{ runner.os }}-Carthage-${{ hashFiles('**/Cartfile.resolved') }}
-        id: restore-cache
+          path: ~/Library/Developer/Xcode/Archives/**/*
+          key: ${{ runner.os }}-ios-archive       
 
       - name: Build Archive
         run: |
@@ -110,10 +108,8 @@ jobs:
       - name: Save build archive cache
         uses: actions/cache@v2
         with:
-          path: |
-            ~/Library/Caches/org.carthage.CarthageKit/
-          key: ${{ runner.os }}-Carthage-${{ hashFiles('**/Cartfile.resolved') }}
-          restore-keys: ${{ runner.os }}-Carthage-
+          path: ~/Library/Developer/Xcode/Archives/**/*
+          key: ${{ runner.os }}-ios-archive }}
 
       - name: Export IPA
         run: |
