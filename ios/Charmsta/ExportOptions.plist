@@ -4,7 +4,7 @@
 <plist version="1.0">
   <dict>
     <key>method</key>
-    <string>app-store</string>
+    <string>ad-hoc</string>
     <key>teamID</key>
     <string>XTN222Y95W</string>
     <key>uploadBitcode</key>
