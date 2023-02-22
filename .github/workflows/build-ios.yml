@@ -137,7 +137,8 @@ jobs:
 
       - name: Clean up keychain and provisioning profile
         if: ${{ always() }}
-        run: |
-          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-          rm ~/Library/MobileDevice/Provisioning\ Profiles/dist_pp.mobileprovision
-          rm ~/Library/MobileDevice/Provisioning\ Profiles/dist_pp_adc.mobileprovision
+        run: |        
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db          
+          rm $RUNNER_TEMP/build_certificate.p12
+          rm $RUNNER_TEMP/build_pp.mobileprovision
+          
