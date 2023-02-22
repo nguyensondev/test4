@@ -118,7 +118,7 @@ jobs:
         with:
           name: "Charmsta.ipa"
           path: |
-            ${{ env.ARTIFACT_PATH }}
+            ${{ env.BUILD_DIR }}
 
       - name: Clean up keychain and provisioning profile
         if: ${{ always() }}
