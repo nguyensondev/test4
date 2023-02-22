@@ -11,5 +11,14 @@
     <true/>
     <key>compileBitcode</key>
     <false/>
+    <key>signingCertificate</key>
+    <string>iOS Distribution</string>
+    <key>signingStyle</key>
+    <string>manual</string>
+    <key>provisioningProfiles</key>
+      <dict>
+        <key>com.softyn.charmsta</key>
+        <string>Charmsta_v2</string>
+      </dict>
   </dict>
 </plist>
